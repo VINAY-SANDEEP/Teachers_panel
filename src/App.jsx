@@ -1,7 +1,4 @@
-// College Admin Panel - React + Tailwind with Backend API Integration
-// Paste this in src/App.jsx of a Vite React project
-// Dependencies: axios, react-router-dom, recharts, framer-motion, react-icons, tailwindcss
-
+// College Admin Panel - Modern UI with Tailwind + Framer Motion
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -26,14 +23,11 @@ import Topics from "./components/Topics";
 
 // ================== API BASE URL ==================
 const API = axios.create({
-  baseURL: "http://localhost:5000/api", // change if deployed
+  baseURL: "http://localhost:5000/api",
 });
 
-// API calls
 const addTopic = (formData) =>
-  API.post("/add-topic", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  API.post("/add-topic", formData, { headers: { "Content-Type": "multipart/form-data" } });
 const getTopics = () => API.get("/topics");
 const deleteTopic = (id) => API.delete(`/topic/${id}`);
 
@@ -47,41 +41,38 @@ const studentData = [
 
 const doubtsMock = [
   { from: "student", text: "Sir, what is polymorphism?" },
-  {
-    from: "teacher",
-    text: "Polymorphism allows different implementations of the same method.",
-  },
+  { from: "teacher", text: "Polymorphism allows different implementations of the same method." },
   { from: "student", text: "Can you give an example?" },
   { from: "teacher", text: "Sure, let’s take shape class with circle and square..." },
 ];
 
-const COLORS = ["#60A5FA", "#BFDBFE"];
+const COLORS = ["#4ADE80", "#F87171"]; // Green & Red
 
 // ================== Components ==================
 function Topbar({ setShowLogin, setShowRegister }) {
   return (
-    <div className="bg-white/70 backdrop-blur shadow-sm px-4 py-3 flex items-center justify-between sticky top-0 z-40">
-      <div className="flex items-center gap-2">
-        <div className="w-10 h-10 rounded-md bg-blue-200 flex items-center justify-center shadow-sm">
-          <span className="font-bold text-blue-700">CE</span>
-        </div>
-        <h1 className="text-lg font-semibold hidden sm:block">
-          College Admin Panel
-        </h1>
-      </div>
+    <div className="bg-gradient-to-r from-blue-400 to-indigo-500 text-white px-6 py-3 flex items-center justify-between sticky top-0 z-40 shadow-lg">
       <div className="flex items-center gap-3">
-        <button
+        <div className="w-12 h-12 rounded-full bg-white/30 flex items-center justify-center shadow-lg">
+          <span className="font-bold text-xl">CE</span>
+        </div>
+        <h1 className="text-xl font-semibold hidden sm:block">College Admin Panel</h1>
+      </div>
+      <div className="flex items-center gap-4">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
           onClick={() => setShowLogin(true)}
-          className="flex items-center gap-2 px-3 py-2 bg-white border rounded-md hover:shadow"
+          className="flex items-center gap-2 px-4 py-2 bg-white text-blue-600 font-semibold rounded-lg shadow hover:shadow-lg transition"
         >
           <FiLogIn /> Login
-        </button>
-        <button
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
           onClick={() => setShowRegister(true)}
-          className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-md hover:scale-105"
+          className="flex items-center gap-2 px-4 py-2 bg-yellow-400 text-white font-semibold rounded-lg shadow hover:shadow-lg transition"
         >
           <FiUserPlus /> Register
-        </button>
+        </motion.button>
       </div>
     </div>
   );
@@ -89,28 +80,18 @@ function Topbar({ setShowLogin, setShowRegister }) {
 
 function Sidebar() {
   const linkClass = ({ isActive }) =>
-    `flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-blue-50 ${
-      isActive ? "bg-blue-100 text-blue-700 font-semibold" : ""
+    `flex items-center gap-3 px-4 py-3 rounded-xl font-medium hover:bg-blue-100 hover:text-blue-700 transition ${
+      isActive ? "bg-blue-200 text-blue-700 shadow" : "text-gray-700"
     }`;
 
   return (
-    <aside className="w-52 bg-white/80 backdrop-blur border-r p-4 min-h-screen">
+    <aside className="w-64 bg-white/90 backdrop-blur border-r p-6 min-h-screen shadow-xl">
       <nav className="flex flex-col gap-3">
-        <NavLink to="/" className={linkClass}>
-          <FiHome /> Home
-        </NavLink>
-        <NavLink to="/topics" className={linkClass}>
-          <FiBook /> Topics
-        </NavLink>
-        <NavLink to="/students" className={linkClass}>
-          <FiUsers /> Students
-        </NavLink>
-        <NavLink to="/doubts" className={linkClass}>
-          <FiMessageSquare /> Doubts
-        </NavLink>
-        <NavLink to="/upload" className={linkClass}>
-          <FiUpload /> Upload
-        </NavLink>
+        <NavLink to="/" className={linkClass}><FiHome /> Home</NavLink>
+        <NavLink to="/topics" className={linkClass}><FiBook /> Topics</NavLink>
+        <NavLink to="/students" className={linkClass}><FiUsers /> Students</NavLink>
+        <NavLink to="/doubts" className={linkClass}><FiMessageSquare /> Doubts</NavLink>
+        <NavLink to="/upload" className={linkClass}><FiUpload /> Upload</NavLink>
       </nav>
     </aside>
   );
@@ -125,35 +106,37 @@ function Dashboard() {
   ];
 
   return (
-    <div className="p-6">
+    <div className="p-8 space-y-6">
       <motion.div
-        initial={{ opacity: 0, y: 8 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+        className="grid grid-cols-1 sm:grid-cols-3 gap-6"
       >
-        <div className="p-4 rounded-xl bg-white shadow">
-          <p>Total Students</p>
-          <h2 className="text-xl font-bold">{studentData.length}</h2>
-        </div>
-        <div className="p-4 rounded-xl bg-white shadow">
-          <p>Watched</p>
-          <h2 className="text-xl font-bold">{watchedCount}</h2>
-        </div>
-        <div className="p-4 rounded-xl bg-white shadow">
-          <p>Not Watched</p>
-          <h2 className="text-xl font-bold">{notWatchedCount}</h2>
-        </div>
+        {[
+          { title: "Total Students", value: studentData.length, color: "bg-indigo-400" },
+          { title: "Watched", value: watchedCount, color: "bg-green-400" },
+          { title: "Not Watched", value: notWatchedCount, color: "bg-red-400" },
+        ].map((card, idx) => (
+          <motion.div
+            key={idx}
+            whileHover={{ scale: 1.05 }}
+            className={`p-6 rounded-2xl text-white shadow-lg ${card.color} cursor-pointer transition`}
+          >
+            <p className="font-medium">{card.title}</p>
+            <h2 className="text-3xl font-bold mt-2">{card.value}</h2>
+          </motion.div>
+        ))}
       </motion.div>
-      <div className="mt-6 bg-white rounded-xl shadow p-6 flex justify-center">
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="bg-white rounded-2xl shadow-lg p-6 flex justify-center"
+      >
         <div className="w-full max-w-md mx-auto">
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height={250}>
             <PieChart>
-              <Pie
-                data={pieData}
-                dataKey="value"
-                innerRadius={40}
-                outerRadius={80}
-              >
+              <Pie data={pieData} dataKey="value" innerRadius={60} outerRadius={100} paddingAngle={5}>
                 {pieData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index]} />
                 ))}
@@ -161,26 +144,27 @@ function Dashboard() {
             </PieChart>
           </ResponsiveContainer>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
 
 function StudentsPage() {
   return (
-    <div className="p-6">
-      <h2 className="text-lg font-semibold mb-4">Students</h2>
-      <ul className="space-y-2">
+    <div className="p-8">
+      <h2 className="text-2xl font-semibold mb-6 text-gray-700">Students</h2>
+      <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {studentData.map((s, idx) => (
-          <li
+          <motion.li
             key={idx}
-            className="p-3 bg-white rounded shadow flex justify-between"
+            whileHover={{ scale: 1.03 }}
+            className="p-4 rounded-2xl bg-gradient-to-tr from-indigo-50 to-blue-50 shadow hover:shadow-lg transition flex justify-between font-medium"
           >
             <span>{s.name}</span>
             <span className={s.watched ? "text-green-600" : "text-red-600"}>
               {s.watched ? "Watched" : "Not Watched"}
             </span>
-          </li>
+          </motion.li>
         ))}
       </ul>
     </div>
@@ -189,20 +173,21 @@ function StudentsPage() {
 
 function DoubtsPage() {
   return (
-    <div className="p-6">
-      <h2 className="text-lg font-semibold mb-4">Doubts</h2>
-      <div className="space-y-3">
+    <div className="p-8">
+      <h2 className="text-2xl font-semibold mb-6 text-gray-700">Doubts</h2>
+      <div className="space-y-4">
         {doubtsMock.map((d, idx) => (
-          <div
+          <motion.div
             key={idx}
-            className={`p-3 rounded-xl max-w-md ${
-              d.from === "student" ? "bg-blue-50 ml-0" : "bg-green-50 ml-10"
+            whileHover={{ scale: 1.02 }}
+            className={`p-4 rounded-2xl max-w-md shadow ${
+              d.from === "student" ? "bg-blue-50 ml-0" : "bg-green-50 ml-12"
             }`}
           >
-            <p className="text-sm">
-              <span className="font-bold">{d.from}:</span> {d.text}
+            <p className="text-sm text-gray-700">
+              <span className="font-semibold capitalize">{d.from}:</span> {d.text}
             </p>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>
@@ -210,12 +195,7 @@ function DoubtsPage() {
 }
 
 function UploadPage() {
-  const [form, setForm] = useState({
-    title: "",
-    description: "",
-    unitName: "",
-    className: "",
-  });
+  const [form, setForm] = useState({ title: "", description: "", unitName: "", className: "" });
   const [fileData, setFileData] = useState({ video: null, notes: null });
   const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
@@ -231,9 +211,7 @@ function UploadPage() {
       body.append("className", form.className);
       if (fileData.video) body.append("video", fileData.video);
       if (fileData.notes) body.append("notes", fileData.notes);
-
       await addTopic(body);
-
       alert("✅ Uploaded successfully");
       navigate("/topics");
     } catch (err) {
@@ -246,140 +224,60 @@ function UploadPage() {
 
   return (
     <div className="flex items-center justify-center min-h-[70vh] w-full">
-      <form
+      <motion.form
         onSubmit={handleUpload}
-        className="bg-white shadow rounded-xl p-6 w-full max-w-lg space-y-3"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-lg space-y-4"
       >
-        <h2 className="text-lg font-semibold">Upload Topic</h2>
+        <h2 className="text-2xl font-semibold text-gray-700">Upload Topic</h2>
         <input
           value={form.title}
           onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
           placeholder="Title"
-          className="w-full px-3 py-2 border rounded"
+          className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
           required
         />
         <input
           value={form.description}
-          onChange={(e) =>
-            setForm((prev) => ({ ...prev, description: e.target.value }))
-          }
+          onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
           placeholder="Description"
-          className="w-full px-3 py-2 border rounded"
+          className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
         />
-        <div className="flex gap-2">
+        <div className="flex gap-4">
           <input
             value={form.unitName}
-            onChange={(e) =>
-              setForm((prev) => ({ ...prev, unitName: e.target.value }))
-            }
+            onChange={(e) => setForm((prev) => ({ ...prev, unitName: e.target.value }))}
             placeholder="Unit Name"
-            className="w-1/2 px-3 py-2 border rounded"
+            className="w-1/2 px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
           />
           <input
             value={form.className}
-            onChange={(e) =>
-              setForm((prev) => ({ ...prev, className: e.target.value }))
-            }
+            onChange={(e) => setForm((prev) => ({ ...prev, className: e.target.value }))}
             placeholder="Class Name"
-            className="w-1/2 px-3 py-2 border rounded"
+            className="w-1/2 px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
           />
         </div>
         <input
           type="file"
           accept="video/*"
-          onChange={(e) =>
-            setFileData((prev) => ({ ...prev, video: e.target.files[0] }))
-          }
-          className="w-full border p-2 rounded"
+          onChange={(e) => setFileData((prev) => ({ ...prev, video: e.target.files[0] }))}
+          className="w-full border p-2 rounded-xl"
         />
         <input
           type="file"
           accept="application/pdf,application/msword"
-          onChange={(e) =>
-            setFileData((prev) => ({ ...prev, notes: e.target.files[0] }))
-          }
-          className="w-full border p-2 rounded"
+          onChange={(e) => setFileData((prev) => ({ ...prev, notes: e.target.files[0] }))}
+          className="w-full border p-2 rounded-xl"
         />
         <button
           type="submit"
           disabled={uploading}
-          className="w-full px-3 py-2 bg-blue-600 text-white rounded"
+          className="w-full px-4 py-2 bg-gradient-to-r from-indigo-500 to-blue-500 text-white font-semibold rounded-xl shadow hover:shadow-lg transition"
         >
           {uploading ? "Uploading..." : "Upload"}
         </button>
-      </form>
-    </div>
-  );
-}
-
-function TopicsPage() {
-  const [topics, setTopics] = useState([]);
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const res = await getTopics();
-        setTopics(res.data);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-    fetchData();
-  }, []);
-
-  async function handleDelete(id) {
-    if (!window.confirm("Delete this topic?")) return;
-    try {
-      await deleteTopic(id);
-      setTopics((prev) => prev.filter((t) => t._id !== id));
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  return (
-    <div className="p-6">
-      <h2 className="text-lg font-semibold mb-4">Topics</h2>
-      <div className="space-y-3">
-        {topics.map((t) => (
-          <div
-            key={t._id}
-            className="bg-white p-4 rounded-xl shadow flex justify-between items-center"
-          >
-            <div>
-              <h3 className="font-bold">{t.title}</h3>
-              <p className="text-sm text-gray-600">{t.description}</p>
-              <p className="text-xs text-gray-400">
-                {t.unitName} | {t.className}
-              </p>
-              <a
-                href={t.videoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 text-sm"
-              >
-                ▶ Watch Video
-              </a>
-              {t.notesUrl && (
-                <a
-                  href={t.notesUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ml-3 text-green-600 text-sm"
-                >
-                  📄 Notes
-                </a>
-              )}
-            </div>
-            <button
-              onClick={() => handleDelete(t._id)}
-              className="px-3 py-1 bg-red-500 text-white rounded"
-            >
-              Delete
-            </button>
-          </div>
-        ))}
-      </div>
+      </motion.form>
     </div>
   );
 }
@@ -406,32 +304,24 @@ export default function App() {
           </main>
         </div>
 
-        {/* Simple modal placeholders */}
         {showLogin && (
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-xl shadow w-80 text-center">
-              <h2 className="text-lg font-bold mb-4">Login</h2>
-              <p className="mb-4 text-sm text-gray-600">Login form placeholder</p>
-              <button
-                onClick={() => setShowLogin(false)}
-                className="px-4 py-2 bg-blue-600 text-white rounded"
-              >
+            <div className="bg-white p-6 rounded-2xl shadow-2xl w-80 text-center">
+              <h2 className="text-xl font-bold mb-4">Login</h2>
+              <p className="mb-4 text-gray-600">Login form placeholder</p>
+              <button onClick={() => setShowLogin(false)} className="px-4 py-2 bg-indigo-500 text-white rounded-xl hover:scale-105 transition">
                 Close
               </button>
             </div>
           </div>
         )}
+
         {showRegister && (
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-xl shadow w-80 text-center">
-              <h2 className="text-lg font-bold mb-4">Register</h2>
-              <p className="mb-4 text-sm text-gray-600">
-                Registration form placeholder
-              </p>
-              <button
-                onClick={() => setShowRegister(false)}
-                className="px-4 py-2 bg-blue-600 text-white rounded"
-              >
+            <div className="bg-white p-6 rounded-2xl shadow-2xl w-80 text-center">
+              <h2 className="text-xl font-bold mb-4">Register</h2>
+              <p className="mb-4 text-gray-600">Registration form placeholder</p>
+              <button onClick={() => setShowRegister(false)} className="px-4 py-2 bg-indigo-500 text-white rounded-xl hover:scale-105 transition">
                 Close
               </button>
             </div>
