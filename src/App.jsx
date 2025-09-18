@@ -1,5 +1,5 @@
 // College Admin Panel - Modern UI with Tailwind + Framer Motion
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import {
   BrowserRouter as Router,
@@ -49,10 +49,17 @@ const doubtsMock = [
 const COLORS = ["#4ADE80", "#F87171"]; // Green & Red
 
 // ================== Components ==================
-function Topbar({ setShowLogin, setShowRegister }) {
+function Topbar({ setShowLogin, setShowRegister, setMobileOpen }) {
   return (
     <div className="bg-gradient-to-r from-blue-400 to-indigo-500 text-white px-6 py-3 flex items-center justify-between sticky top-0 z-40 shadow-lg">
       <div className="flex items-center gap-3">
+        {/* Hamburger for Mobile */}
+        <button
+          className="md:hidden text-white text-2xl mr-2"
+          onClick={() => setMobileOpen(true)}
+        >
+          &#9776;
+        </button>
         <div className="w-12 h-12 rounded-full bg-white/30 flex items-center justify-center shadow-lg">
           <span className="font-bold text-xl">CE</span>
         </div>
@@ -78,22 +85,47 @@ function Topbar({ setShowLogin, setShowRegister }) {
   );
 }
 
-function Sidebar() {
+function Sidebar({ mobileOpen, setMobileOpen }) {
   const linkClass = ({ isActive }) =>
     `flex items-center gap-3 px-4 py-3 rounded-xl font-medium hover:bg-blue-100 hover:text-blue-700 transition ${
       isActive ? "bg-blue-200 text-blue-700 shadow" : "text-gray-700"
     }`;
 
+  const sidebarContent = (
+    <nav className="flex flex-col gap-3">
+      <NavLink to="/" className={linkClass} onClick={() => setMobileOpen(false)}><FiHome /> Home</NavLink>
+      <NavLink to="/topics" className={linkClass} onClick={() => setMobileOpen(false)}><FiBook /> Topics</NavLink>
+      <NavLink to="/students" className={linkClass} onClick={() => setMobileOpen(false)}><FiUsers /> Students</NavLink>
+      <NavLink to="/doubts" className={linkClass} onClick={() => setMobileOpen(false)}><FiMessageSquare /> Doubts</NavLink>
+      <NavLink to="/upload" className={linkClass} onClick={() => setMobileOpen(false)}><FiUpload /> Upload</NavLink>
+    </nav>
+  );
+
   return (
-    <aside className="w-64 bg-white/90 backdrop-blur border-r p-6 min-h-screen shadow-xl">
-      <nav className="flex flex-col gap-3">
-        <NavLink to="/" className={linkClass}><FiHome /> Home</NavLink>
-        <NavLink to="/topics" className={linkClass}><FiBook /> Topics</NavLink>
-        <NavLink to="/students" className={linkClass}><FiUsers /> Students</NavLink>
-        <NavLink to="/doubts" className={linkClass}><FiMessageSquare /> Doubts</NavLink>
-        <NavLink to="/upload" className={linkClass}><FiUpload /> Upload</NavLink>
-      </nav>
-    </aside>
+    <>
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:flex w-64 bg-white/90 backdrop-blur border-r p-6 min-h-screen shadow-xl">
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile Sidebar Overlay */}
+      {mobileOpen && (
+        <motion.div
+          initial={{ x: "-100%" }}
+          animate={{ x: 0 }}
+          exit={{ x: "-100%" }}
+          className="fixed inset-0 bg-white/95 z-50 p-6 md:hidden flex flex-col"
+        >
+          <button
+            className="self-end mb-4 text-gray-700 text-2xl"
+            onClick={() => setMobileOpen(false)}
+          >
+            &times;
+          </button>
+          {sidebarContent}
+        </motion.div>
+      )}
+    </>
   );
 }
 
@@ -180,9 +212,7 @@ function DoubtsPage() {
           <motion.div
             key={idx}
             whileHover={{ scale: 1.02 }}
-            className={`p-4 rounded-2xl max-w-md shadow ${
-              d.from === "student" ? "bg-blue-50 ml-0" : "bg-green-50 ml-12"
-            }`}
+            className={`p-4 rounded-2xl max-w-md shadow ${d.from === "student" ? "bg-blue-50 ml-0" : "bg-green-50 ml-12"}`}
           >
             <p className="text-sm text-gray-700">
               <span className="font-semibold capitalize">{d.from}:</span> {d.text}
@@ -286,13 +316,18 @@ function UploadPage() {
 export default function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <Router>
       <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col">
-        <Topbar setShowLogin={setShowLogin} setShowRegister={setShowRegister} />
-        <div className="flex flex-1">
-          <Sidebar />
+        <Topbar
+          setShowLogin={setShowLogin}
+          setShowRegister={setShowRegister}
+          setMobileOpen={setMobileOpen}
+        />
+        <div className="flex flex-1 relative">
+          <Sidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
           <main className="flex-1 overflow-y-auto">
             <Routes>
               <Route path="/" element={<Dashboard />} />
@@ -304,24 +339,30 @@ export default function App() {
           </main>
         </div>
 
+        {/* Login & Register Modals */}
         {showLogin && (
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-2xl shadow-2xl w-80 text-center">
               <h2 className="text-xl font-bold mb-4">Login</h2>
               <p className="mb-4 text-gray-600">Login form placeholder</p>
-              <button onClick={() => setShowLogin(false)} className="px-4 py-2 bg-indigo-500 text-white rounded-xl hover:scale-105 transition">
+              <button
+                onClick={() => setShowLogin(false)}
+                className="px-4 py-2 bg-indigo-500 text-white rounded-xl hover:scale-105 transition"
+              >
                 Close
               </button>
             </div>
           </div>
         )}
-
         {showRegister && (
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-2xl shadow-2xl w-80 text-center">
               <h2 className="text-xl font-bold mb-4">Register</h2>
               <p className="mb-4 text-gray-600">Registration form placeholder</p>
-              <button onClick={() => setShowRegister(false)} className="px-4 py-2 bg-indigo-500 text-white rounded-xl hover:scale-105 transition">
+              <button
+                onClick={() => setShowRegister(false)}
+                className="px-4 py-2 bg-indigo-500 text-white rounded-xl hover:scale-105 transition"
+              >
                 Close
               </button>
             </div>
